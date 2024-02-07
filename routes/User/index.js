@@ -3,6 +3,8 @@ import {
   handleRequestBodyForUserPostCall,
   handleWhiteListedKeysForUserPostCall,
   handleValidationsForUserSchema,
+  handleParamsAndBody,
+  handleBaseAuth,
 } from "../../middleware/queryAndBodyCheck.js";
 import Controller from "../../controllers/index.js";
 
@@ -22,6 +24,14 @@ userRouter
     handleWhiteListedKeysForUserPostCall,
     handleValidationsForUserSchema,
     Controller.UserController.createNewUser
+  );
+
+userRouter
+  .route("/")
+  .get(
+    handleParamsAndBody,
+    handleBaseAuth,
+    Controller.UserController.getUserDetails
   );
 
 export default userRouter;

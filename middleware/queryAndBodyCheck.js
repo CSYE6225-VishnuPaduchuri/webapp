@@ -2,6 +2,8 @@ import {
   ValidateEmailAddress,
   ValidatePassword,
 } from "../utils/common/index.js";
+import User from "../models/User/index.js";
+import bcrypt from "bcrypt";
 
 export const handleParamsAndBody = (req, res, next) => {
   // Desctructure the request object
@@ -94,4 +96,71 @@ export const handleValidationsForUserSchema = (req, res, next) => {
   }
 
   next();
+};
+
+export const handleBaseAuth = async (req, res, next) => {
+  if (!req.headers.authorization) {
+    res.status(400).send();
+  }
+
+  try {
+    // Reference taken from https://www.geeksforgeeks.org/basic-authentication-in-node-js-using-http-header/
+    const authorizationInfo = req.headers.authorization.split(" ");
+
+    // Adding check only for when the authorization header is not Basic
+    if (authorizationInfo && authorizationInfo[0] !== "Basic") {
+      res.status(400).send();
+    }
+
+    const authCredentials = authorizationInfo && authorizationInfo[1];
+
+    const credentials = Buffer.from(authCredentials, "base64").toString(
+      "ascii"
+    );
+
+    const userCredentials = credentials.split(":");
+
+    const userName = userCredentials[0];
+    const password = userCredentials[1];
+
+    // if userName or password is empty then we have to throw 401
+    // empty value are to be considered as invalid credentials
+    // Reference https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#access_forbidden
+    if (!userName || !password) {
+      res.setHeader("WWW-Authenticate", "Basic");
+      res.status(401).send();
+    }
+
+    if (!ValidateEmailAddress(userName)) {
+      res.setHeader("WWW-Authenticate", "Basic");
+      res.status(400).send();
+    }
+
+    const checkUserCredentials = await User.findOne({
+      where: { username: userName },
+    });
+
+    if (checkUserCredentials == null) {
+      res.setHeader("WWW-Authenticate", "Basic");
+      res.status(401).send();
+    }
+
+    // we are comparing the password of the request and the stored hashed password
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      checkUserCredentials.password
+    );
+
+    if (isPasswordValid) {
+      // We will append the user data to authorizedUserObject
+      // and return it from controller
+      req.authorizedUserObject = checkUserCredentials;
+      next();
+    } else {
+      res.setHeader("WWW-Authenticate", "Basic");
+      res.status(401).send();
+    }
+  } catch (e) {
+    res.status(500).send();
+  }
 };

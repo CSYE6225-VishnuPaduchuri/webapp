@@ -45,3 +45,20 @@ export const createNewUser = async (req, res) => {
     res.status(500).send();
   }
 };
+
+export const getUserDetails = (req, res) => {
+  try {
+    const userDetails = {
+      id: req.authorizedUserObject.id,
+      first_name: req.authorizedUserObject.first_name,
+      last_name: req.authorizedUserObject.last_name,
+      username: req.authorizedUserObject.username,
+      account_created: req.authorizedUserObject.account_created,
+      account_updated: req.authorizedUserObject.account_updated,
+    };
+
+    res.status(200).send(userDetails);
+  } catch (e) {
+    res.status(500).send();
+  }
+};
