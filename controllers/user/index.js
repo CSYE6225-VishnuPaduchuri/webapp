@@ -62,3 +62,34 @@ export const getUserDetails = (req, res) => {
     res.status(500).send();
   }
 };
+
+export const updateUserDetails = async (req, res) => {
+  const requestOject = {};
+
+  try {
+    const { body, authorizedUserObject } = req;
+
+    // checking if body has first_name, then adding it to
+    // the request object key
+    // this is done for first_name, last_name and password
+    // as we want to update only fields that user has given to us
+    if (body.hasOwnProperty("first_name")) {
+      requestOject["first_name"] = body["first_name"];
+    }
+
+    if (body.hasOwnProperty("last_name")) {
+      requestOject["last_name"] = body["last_name"];
+    }
+
+    if (body.hasOwnProperty("password")) {
+      const hashedPassword = await bcrypt.hash(body["password"], 10);
+      requestOject["password"] = hashedPassword;
+    }
+
+    await authorizedUserObject.update(requestOject);
+
+    res.status(204).send();
+  } catch (e) {
+    res.status(500).send();
+  }
+};

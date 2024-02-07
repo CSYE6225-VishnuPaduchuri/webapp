@@ -164,3 +164,65 @@ export const handleBaseAuth = async (req, res, next) => {
     res.status(500).send();
   }
 };
+
+export const handleParamsAndBodyForPut = (req, res, next) => {
+  const { body, query, url } = req;
+
+  const queryParams = Object.keys(query);
+  const bodyJson = Object.keys(body);
+
+  if (queryParams.length > 0 || url.includes("?")) {
+    res.status(400).send();
+  }
+
+  if (
+    bodyJson.length === 0 ||
+    (req.headers["content-type"] &&
+      req.headers["content-type"] !== "application/json")
+  ) {
+    res.status(400).send();
+  }
+
+  const whiteListedFields = ["first_name", "last_name", "password"];
+
+  // In this filter, as long as PUT payload has one of the
+  // whitelistedFields and no other fields, then it will be allowed to process
+  const unwantedKeys = bodyJson.filter(
+    (key) => !whiteListedFields.includes(key)
+  );
+
+  if (unwantedKeys.length > 0) {
+    res.status(400).send();
+  }
+
+  const { password, first_name, last_name } = body;
+
+  // Adding this check to see if the request has any of the keys
+  // if it has the key, we have to check if its string or not
+  if (body.hasOwnProperty("password")) {
+    if (typeof password !== "string") {
+      res.status(400).send();
+    }
+
+    if (!ValidatePassword(password)) {
+      res.status(400).send();
+    }
+  }
+
+  if (body.hasOwnProperty("first_name")) {
+    if (typeof first_name !== "string") {
+      res.status(400).send();
+    }
+  }
+
+  if (body.hasOwnProperty("last_name")) {
+    if (typeof last_name !== "string") {
+      res.status(400).send();
+    }
+  }
+
+  // if there are no unwanted keys, then we can process this request
+  if (unwantedKeys.length === 0) {
+    next();
+  }
+};
