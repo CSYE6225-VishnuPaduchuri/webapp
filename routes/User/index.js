@@ -5,6 +5,7 @@ import {
   handleValidationsForUserSchema,
   handleParamsAndBody,
   handleBaseAuth,
+  handleParamsAndBodyForPut,
 } from "../../middleware/queryAndBodyCheck.js";
 import Controller from "../../controllers/index.js";
 
@@ -32,6 +33,14 @@ userRouter
     handleParamsAndBody,
     handleBaseAuth,
     Controller.UserController.getUserDetails
+  );
+
+userRouter
+  .route("/")
+  .put(
+    handleParamsAndBodyForPut,
+    handleBaseAuth,
+    Controller.UserController.updateUserDetails
   );
 
 export default userRouter;
