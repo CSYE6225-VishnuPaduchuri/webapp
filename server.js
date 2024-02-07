@@ -1,6 +1,9 @@
 import express from "express";
 import initialize from "./app/index.js";
-import dotenv from "dotenv/config";
+import dotenv from "dotenv";
+
+// Get ENV Variables
+dotenv.config();
 
 // Initialise express
 const app = express();

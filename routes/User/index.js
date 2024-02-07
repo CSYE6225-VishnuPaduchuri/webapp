@@ -28,7 +28,7 @@ userRouter
   );
 
 userRouter
-  .route("/")
+  .route("/self")
   .get(
     handleParamsAndBody,
     handleBaseAuth,
@@ -36,7 +36,7 @@ userRouter
   );
 
 userRouter
-  .route("/")
+  .route("/self")
   .put(
     handleParamsAndBodyForPut,
     handleBaseAuth,
