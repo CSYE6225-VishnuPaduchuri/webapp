@@ -1,3 +1,8 @@
+import {
+  ValidateEmailAddress,
+  ValidatePassword,
+} from "../utils/common/index.js";
+
 export const handleParamsAndBody = (req, res, next) => {
   // Desctructure the request object
   const { body, query, url } = req;
@@ -24,4 +29,69 @@ export const handleParamsAndBody = (req, res, next) => {
   } else {
     next();
   }
+};
+
+export const handleRequestBodyForUserPostCall = (req, res, next) => {
+  const { body, query, url } = req;
+
+  const queryParams = Object.keys(query);
+  const bodyJson = Object.keys(body);
+
+  // if body is empty then we have to reject this request and return 400
+  if (
+    bodyJson.length === 0 ||
+    (req.headers["content-type"] &&
+      req.headers["content-type"] !== "application/json") ||
+    req.headers["authorization"]
+  ) {
+    res.status(400).send();
+  } else if (queryParams.length > 0 || url.includes("?")) {
+    res.status(400).send();
+  } else {
+    next();
+  }
+};
+
+export const handleWhiteListedKeysForUserPostCall = (req, res, next) => {
+  const { body } = req;
+  const bodyJson = Object.keys(body);
+
+  // these are the keys that we are expecting in the body of the request
+  const mandatoryKeys = ["first_name", "last_name", "password", "username"];
+
+  const unwantedKeys = mandatoryKeys.filter((key) => !bodyJson.includes(key));
+
+  if (unwantedKeys.length > 0) {
+    res.status(400).send();
+  }
+
+  if (unwantedKeys.length === 0) {
+    next();
+  }
+};
+
+export const handleValidationsForUserSchema = (req, res, next) => {
+  const { body } = req;
+  const {
+    first_name = "",
+    last_name = "",
+    password = "",
+    username = "",
+  } = body;
+
+  if (
+    first_name === "" ||
+    last_name === "" ||
+    password === "" ||
+    username === ""
+  ) {
+    res.status(400).send();
+  }
+
+  // if password or username is not valid then we have to reject this request and return 400
+  if (!ValidatePassword(password) || !ValidateEmailAddress(username)) {
+    res.status(400).send();
+  }
+
+  next();
 };
