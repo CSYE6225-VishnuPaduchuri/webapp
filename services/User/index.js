@@ -1,11 +1,14 @@
 import User from "../../models/User/index.js";
 
-export const findUserByUsername = async (username) => {
+export const findUserByUsername = async (username, res) => {
   try {
     const userDetails = await User.findOne({ where: { username } });
     return userDetails;
   } catch (e) {
-    console.log("Error in findUserByUsername function", e);
+    if (e.name == "SequelizeConnectionRefusedError") {
+      res.status(503).send();
+      return;
+    }
     return null;
   }
 };
