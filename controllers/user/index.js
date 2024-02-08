@@ -73,11 +73,20 @@ export const updateUserDetails = async (req, res) => {
     // the request object key
     // this is done for first_name, last_name and password
     // as we want to update only fields that user has given to us
+
     if (body.hasOwnProperty("first_name")) {
+      if (body["first_name"].length == 0) {
+        res.status(400).send();
+        return;
+      }
       requestOject["first_name"] = body["first_name"];
     }
 
     if (body.hasOwnProperty("last_name")) {
+      if (body["last_name"].length == 0) {
+        res.status(400).send();
+        return;
+      }
       requestOject["last_name"] = body["last_name"];
     }
 

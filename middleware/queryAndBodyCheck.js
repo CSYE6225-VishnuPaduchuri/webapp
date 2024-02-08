@@ -93,9 +93,9 @@ export const handleValidationsForUserSchema = (req, res, next) => {
   // if password or username is not valid then we have to reject this request and return 400
   if (!ValidatePassword(password) || !ValidateEmailAddress(username)) {
     res.status(400).send();
+  } else {
+    next();
   }
-
-  next();
 };
 
 export const handleBaseAuth = async (req, res, next) => {
