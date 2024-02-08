@@ -29,6 +29,13 @@ userRouter
 
 userRouter
   .route("/self")
+  .delete(Controller.CommonController.MethodNotSupported)
+  .patch(Controller.CommonController.MethodNotSupported)
+  .head(Controller.CommonController.MethodNotSupported)
+  .options(Controller.CommonController.MethodNotSupported);
+
+userRouter
+  .route("/self")
   .get(
     handleParamsAndBody,
     handleBaseAuth,

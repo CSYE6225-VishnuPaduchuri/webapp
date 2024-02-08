@@ -1,5 +1,9 @@
 // Reference: The following code has been referenced from the link https://sequelize.org/docs/v6/getting-started/
 import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
+
+// Get ENV Variables
+dotenv.config();
 
 const sequelize = new Sequelize(
   process.env.DATABASE_NAME,
