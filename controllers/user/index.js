@@ -8,7 +8,7 @@ export const createNewUser = async (req, res) => {
   try {
     const { first_name, last_name, username, password } = req.body;
 
-    const isExistingUser = await findUserByUsername(username);
+    const isExistingUser = await findUserByUsername(username, res);
 
     if (isExistingUser) {
       // if user already exists then we have to return 409
@@ -35,14 +35,16 @@ export const createNewUser = async (req, res) => {
           account_created: newUser.account_created,
           account_updated: newUser.account_updated,
         };
-
         res.status(201).send(responsebody);
-      } else {
-        res.status(500).send();
       }
     }
   } catch (e) {
-    res.status(500).send();
+    if (e.name == "SequelizeConnectionRefusedError") {
+      res.status(503).send();
+      return;
+    } else {
+      res.status(500).send();
+    }
   }
 };
 
@@ -99,6 +101,10 @@ export const updateUserDetails = async (req, res) => {
 
     res.status(204).send();
   } catch (e) {
+    if (e.name == "SequelizeConnectionRefusedError") {
+      res.status(503).send();
+      return;
+    }
     res.status(500).send();
   }
 };

@@ -161,6 +161,10 @@ export const handleBaseAuth = async (req, res, next) => {
       res.status(401).send();
     }
   } catch (e) {
+    if (e.name == "SequelizeConnectionRefusedError") {
+      res.status(503).send();
+      return;
+    }
     res.status(500).send();
   }
 };
