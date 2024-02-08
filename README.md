@@ -20,3 +20,5 @@ In order to test this application on your local, we will be requiring the follow
    5. DATABASE_HOST_URL=localhost
 
 2. Run the command "npm i" to install dependencies required
+
+3. Run the command "npm run dev" for running in development mode or Run the command "npm run production" for running in production mode.
