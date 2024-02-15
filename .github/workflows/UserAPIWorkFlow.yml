@@ -32,7 +32,7 @@ jobs:
       - name: create a new DB and update the user password via secrets
         run: |
           sudo -u postgres psql -c "CREATE DATABASE ${{ env.DATABASE_NAME }};"
-          sudo -u postgres psql -c "CREATE USER ${{env.DATABASE_USER_NAME}} PASSWORD ${{env.DATABASE_PASSWORD}};"
+          sudo -u postgres psql -c "CREATE USER ${{env.DATABASE_USER_NAME}} PASSWORD '${{env.DATABASE_PASSWORD}}';"
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ env.DATABASE_NAME }} TO ${{ env.DATABASE_USER_NAME }};"
 
       - run: npm install
