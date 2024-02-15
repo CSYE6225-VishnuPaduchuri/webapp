@@ -10,3 +10,5 @@ const app = express();
 const portNumber = process.env.SERVER_PORT;
 initialize(app);
 app.listen(portNumber, () => console.log(`Server ready at port ${portNumber}`));
+
+export default app;
