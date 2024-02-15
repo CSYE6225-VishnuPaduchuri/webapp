@@ -1,0 +1,39 @@
+name: CI for Testing User
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    name: user-api-tests
+    runs-on: ubuntu-latest
+
+    # Reading env variables from github secrets
+    env:
+      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+      DATABASE_USER_NAME: ${{ secrets.DATABASE_USER_NAME }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+
+      - name: install postgres
+        run: |
+          sudo apt update
+          sudo apt install postgresql postgresql-contrib -y
+          sudo systemctl start postgresql.service
+
+      # Referenced from to create DB, a new user and granting them necessary permissions
+      # https://medium.com/@mohammedhammoud/postgresql-create-user-create-database-grant-privileges-access-aabb2507c0aa
+      - name: create a new DB and update the user password via secrets
+        run: |
+          sudo -u postgres psql -c "CREATE DATABASE ${{ env.DATABASE_NAME }};"
+          sudo -u postgres psql -c "CREATE USER ${{env.DATABASE_USER_NAME}} PASSWORD ${{env.DATABASE_PASSWORD}};"
+          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ env.DATABASE_NAME }} TO ${{ env.DATABASE_USER_NAME }};"
+
+      - run: npm install
+      - run: npm test
