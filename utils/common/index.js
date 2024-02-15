@@ -12,3 +12,11 @@ export const ValidateEmailAddress = (userEmail = "") => {
   const regex = /^\S+@\S+\.\S+$/;
   return regex.test(userEmail);
 };
+
+// This has been referenced from https://stackoverflow.com/a/3905553/10235939
+export const EncodeUserCredentials = (username, password) => {
+  const userCredentials = `${username}:${password}`;
+  const encodedUserCredentials =
+    Buffer.from(userCredentials).toString("base64");
+  return `Basic ${encodedUserCredentials}`;
+};
