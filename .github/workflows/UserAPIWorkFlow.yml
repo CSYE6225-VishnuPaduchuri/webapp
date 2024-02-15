@@ -21,6 +21,8 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v3
 
+        # The step where we install postgres is referenced from
+        # https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart
       - name: install postgres
         run: |
           sudo apt update

@@ -50,6 +50,7 @@ describe("Create a new user and call get to verify if user has been created", ()
 
     // we are checking if the request was successful by checking if the status code is 200
     assert.strictEqual(getUserDetailsRes.status, 200);
+    // we are now checking if the username mentiond in the payload is same as the username in the response of the GET call
     assert.strictEqual(getUserDetailsRes.body.username, userPayload.username);
   });
 });
@@ -57,6 +58,7 @@ describe("Create a new user and call get to verify if user has been created", ()
 // `describe` function is used to explain why we are running the below test case
 describe("Create a new user and call get to verify if user has been created", () => {
   it("a user has to be created and their record has to be present in the Database", async () => {
+    // Here we are updating the first_name of the user using the PUT method
     const updatedUserResponse = await request(localServer)
       .put("/v1/user/self")
       .set(
