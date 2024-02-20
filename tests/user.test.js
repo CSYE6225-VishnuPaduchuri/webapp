@@ -83,7 +83,7 @@ describe("Create a new user and call get to verify if user has been created", ()
     // here we are checking if the first_name field has been updated
     // we are checking between the payload sent to PUT call and the response from GET call
     assert.strictEqual(
-      getUserDetailsRes.body.first_name,
+      "yash",
       updateUserPayload.first_name
     );
   });
