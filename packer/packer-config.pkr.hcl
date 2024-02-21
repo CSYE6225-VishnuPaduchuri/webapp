@@ -26,4 +26,18 @@ source "googlecompute" "webapp-centos-custom-image" {
 build {
   name    = "testing-image-build"
   sources = ["source.googlecompute.webapp-centos-custom-image"]
+
+  // The zip of the webapp is copied to the /tmp/ directory of the image
+  provisioner "file" {
+    source      = "webapp.zip"
+    destination = "/tmp/"
+  }
+
+  // The webapp.service file is copied to the /tmp/ directory of the image
+  // it was referenced from the lecture slides https://spring2024.csye6225.cloud/lectures/06/
+  provisioner "file" {
+    source      = "./imageScripts/webapp.service"
+    destination = "/tmp/"
+  }
+
 }
