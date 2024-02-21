@@ -21,6 +21,9 @@ source "googlecompute" "webapp-centos-custom-image" {
   image_project_id        = "${var.gcp_project_id}"
   image_storage_locations = "${var.image_storage_locations}"
   source_image_family     = "${var.source_image_family}"
+  region                  = "${var.gcp_region}"
+  machine_type            = "${var.gcp_machine_type}"
+  network                 = "${var.gcp_network}"
 }
 
 build {
