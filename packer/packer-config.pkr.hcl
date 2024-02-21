@@ -15,7 +15,7 @@ source "googlecompute" "webapp-centos-custom-image" {
   ssh_username            = "${var.gcp_ssh_name}"
   disk_size               = "${var.image_disk_size}"
   disk_type               = "${var.image_disk_type}"
-  image_name              = "vishnu-csye225-{{timestamp}}"
+  image_name              = "vishnu-csye6225-{{timestamp}}"
   image_description       = "${var.image_description}"
   image_family            = "${var.image_family}"
   image_project_id        = "${var.gcp_project_id}"
@@ -44,6 +44,8 @@ build {
     scripts = [
       "./imageScripts/install_node.sh",
       "./imageScripts/install_database.sh",
+      "./imageScripts/create_group_user_csye6225.sh",
+      "./imageScripts/webapp_bootup.sh",
     ]
   }
 
