@@ -7,7 +7,7 @@ variable "gcp_project_id" {
 variable "gcp_zone" {
   description = "The GCP zone"
   type        = string
-  default     = "us-east1"
+  default     = "us-east1-b"
 }
 
 variable "gcp_ssh_name" {
@@ -50,4 +50,22 @@ variable "source_image_family" {
   description = "The source image family"
   type        = string
   default     = "centos-stream-8"
+}
+
+variable "gcp_region" {
+  description = "The region where the image will be created"
+  type        = string
+  default     = "us-east1"
+}
+
+variable "gcp_network" {
+  description = "The network tag is set to default"
+  type        = string
+  default     = "default"
+}
+
+variable "gcp_machine_type" {
+  description = "The machine type of the image"
+  type        = string
+  default     = "n1-standard-1"
 }
