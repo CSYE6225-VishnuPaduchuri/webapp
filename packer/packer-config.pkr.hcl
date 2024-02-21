@@ -40,4 +40,10 @@ build {
     destination = "/tmp/"
   }
 
+  provisioner "shell" {
+    scripts = [
+      "./imageScripts/install_node.sh",
+    ]
+  }
+
 }
