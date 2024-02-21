@@ -24,7 +24,6 @@ source "googlecompute" "webapp-centos-custom-image" {
 }
 
 build {
-  name    = "testing-image-build"
   sources = ["source.googlecompute.webapp-centos-custom-image"]
 
   // The zip of the webapp is copied to the /tmp/ directory of the image
