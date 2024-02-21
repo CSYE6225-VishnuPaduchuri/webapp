@@ -14,7 +14,6 @@ source "googlecompute" "webapp-centos" {
   zone                = "us-east1"
   ssh_username        = "packer"
   source_image_family = "centos-stream-8"
-  description         = "CentOS, CentOS, Stream 8, x86_64 built on 20240110",
 }
 
 build {
