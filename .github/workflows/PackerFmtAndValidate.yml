@@ -12,6 +12,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+        # References https://developer.hashicorp.com/packer/tutorials/docker-get-started/get-started-install-cli
+      - name: Install Packer
+        run: |
+          sudo apt-get update
+          sudo apt-get install packer
+
+      - name: Initialize Packer
+        run: packer init ./packer
+
       - name: Run packer formart command to check for any formatting issues, adding -check so that workflow fails if any formats are present
         run: packer fmt -check ./packer
 
