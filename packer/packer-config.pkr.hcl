@@ -10,7 +10,7 @@ packer {
 }
 
 source "googlecompute" "webapp-centos" {
-  project_id          = "csye6225-vishnupaduchuri"
+  project_id = "csye6225-vishnupaduchuri"
   zone                = "us-east1"
   ssh_username        = "packer"
   source_image_family = "centos-stream-8"
