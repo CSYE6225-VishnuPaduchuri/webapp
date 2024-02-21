@@ -1,0 +1,19 @@
+name: Packer Formart and Validate Check
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    name: packer-fmt-validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run packer formart command to check for any formatting issues, adding -check so that workflow fails if any formats are present
+        run: packer fmt -check ./packer
+
+      - name: Run packer validate command to check if configuration is valid or not
+        run: packer validate ./packer
