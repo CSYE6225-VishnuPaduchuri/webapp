@@ -1,0 +1,20 @@
+[Unit]
+Description=This is used to start the webapp when image is booted on a VM
+ConditionPathExists=/opt/csye6225/webapp/node_modules
+After=network.target
+
+[Service]
+Type=simple
+User=csye6225
+Group=csye6225
+EnvironmentFile=/opt/csye6225/webapp/.env
+WorkingDirectory=/opt/csye6225/webapp
+ExecStart=/usr/bin/npm run production
+Restart=always
+RestartSec=15
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=csye6225
+
+[Install]
+WantedBy=multi-user.target
