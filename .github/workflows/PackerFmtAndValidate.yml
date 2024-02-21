@@ -18,6 +18,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install packer
 
+        # we have added webapp.zip as part of the file provisioner in packer
+        # so we need to perform the zip operation and then copy the zip file to the current directory
+      - name: Zip the webapp folder
+        run: |
+          cd ../
+          zip -r webapp.zip webapp
+          cd -
+          cp ../webapp.zip .
+
       - name: Initialize Packer
         run: packer init ./packer
 
