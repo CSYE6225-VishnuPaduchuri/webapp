@@ -2,7 +2,7 @@
 
 # Install Postgres
 # Reference taken from https://www.linode.com/docs/guides/centos-install-and-use-postgresql/
-sudo yum install postgresql-server postgresql-contrib
+sudo yum install -y postgresql-server postgresql-contrib
 
 # As centos does not enable postgres by default, we will run the below command
 sudo postgresql-setup --initdb
