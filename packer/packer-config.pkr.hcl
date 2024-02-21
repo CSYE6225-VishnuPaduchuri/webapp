@@ -43,6 +43,7 @@ build {
   provisioner "shell" {
     scripts = [
       "./imageScripts/install_node.sh",
+      "./imageScripts/install_database.sh",
     ]
   }
 
