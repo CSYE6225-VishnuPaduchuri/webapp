@@ -1,0 +1,88 @@
+name: Build Image with Packer
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    name: packer-image-build
+    runs-on: ubuntu-latest
+
+    # Reading env variables from github secrets
+    env:
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+      DATABASE_USER_NAME: ${{ secrets.DATABASE_USER_NAME }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      DATABASE_HOST_URL: ${{ secrets.DATABASE_HOST_URL }}
+      GCP_AUTH_CREDENTIALS: ${{ secrets.GCP_AUTH_CREDENTIALS }}
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+
+        # Referenced from https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart
+      - name: install postgres
+        run: |
+          sudo apt update
+          sudo apt install postgresql postgresql-contrib -y
+          sudo systemctl start postgresql.service
+
+        # Referenced from to create DB, a new user and granting them necessary permissions
+        # https://medium.com/@mohammedhammoud/postgresql-create-user-create-database-grant-privileges-access-aabb2507c0aa
+      - name: create a new DB and update the user password via secrets
+        run: |
+          sudo -u postgres psql -c "CREATE DATABASE ${{ env.DATABASE_NAME }};"
+          sudo -u postgres psql -c "CREATE USER ${{env.DATABASE_USER_NAME}} PASSWORD '${{env.DATABASE_PASSWORD}}';"
+          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ env.DATABASE_NAME }} TO ${{ env.DATABASE_USER_NAME }};"
+
+      - run: npm install
+      - run: npm test
+      - run: rm -r node_modules
+
+      - name: create env file for webapp
+        run: |
+          touch .env
+          echo "SERVER_PORT=${SERVER_PORT}" >> .env
+          echo "DATABASE_NAME=${DATABASE_NAME}" >> .env
+          echo "DATABASE_USER_NAME=${DATABASE_USER_NAME}" >> .env
+          echo "DATABASE_PASSWORD=${DATABASE_PASSWORD}" >> .env
+          echo "DATABASE_HOST_URL=${DATABASE_HOST_URL}" >> .env
+
+        # we have added webapp.zip as part of the file provisioner in packer
+        # so we need to perform the zip operation and then copy the zip file to the current directory
+      - name: Zip the webapp folder
+        run: |
+          cd ../
+          zip -r webapp.zip webapp
+          cd -
+          cp ../webapp.zip .
+
+      - name: Install Packer
+        run: |
+          sudo apt-get update
+          sudo apt-get install packer
+
+      - name: Initialize Packer
+        run: packer init ./packer
+
+      - name: Run packer validate command to check if configuration is valid or not
+        run: packer validate ./packer
+
+      - name: Authentication with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ env.GCP_AUTH_CREDENTIALS }}
+
+      - name: Add google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: GCloud Info
+        run: gcloud info
+
+      - name: Build Image using Packer
+        run: packer build -var 'gcp_project_id=${{ env.GCP_PROJECT_ID }}' ./packer
