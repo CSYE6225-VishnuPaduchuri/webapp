@@ -9,14 +9,21 @@ packer {
   }
 }
 
-source "googlecompute" "webapp-centos" {
-  project_id = "csye6225-vishnupaduchuri"
-  zone                = "us-east1"
-  ssh_username        = "packer"
-  source_image_family = "centos-stream-8"
+source "googlecompute" "webapp-centos-custom-image" {
+  project_id              = "${var.gcp_project_id}"
+  zone                    = "${var.gcp_zone}"
+  ssh_username            = "${var.gcp_ssh_name}"
+  disk_size               = "${var.image_disk_size}"
+  disk_type               = "${var.image_disk_type}"
+  image_name              = "vishnu-csye225-{{timestamp}}"
+  image_description       = "${var.image_description}"
+  image_family            = "${var.image_family}"
+  image_project_id        = "${var.gcp_project_id}"
+  image_storage_locations = "${var.image_storage_locations}"
+  source_image_family     = "${var.source_image_family}"
 }
 
 build {
   name    = "testing-image-build"
-  sources = ["source.googlecompute.webapp-centos"]
+  sources = ["source.googlecompute.webapp-centos-custom-image"]
 }
