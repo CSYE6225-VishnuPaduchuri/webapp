@@ -4,7 +4,7 @@
 sudo yum update -y
 
 # Run this command to upgrade the installed packages to latest version
-sudo yum upgrade -y
+# sudo yum upgrade -y
 
 # Install zip
 sudo yum install -y unzip
