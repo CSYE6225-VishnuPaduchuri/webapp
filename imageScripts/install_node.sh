@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run this command to update the installed packages to latest version
-sudo yum update -y
+# sudo yum update -y
 
 # Run this command to upgrade the installed packages to latest version
 # sudo yum upgrade -y
