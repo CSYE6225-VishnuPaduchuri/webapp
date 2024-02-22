@@ -1,12 +1,17 @@
 name: Build Image with Packer
 
+# Taken reference from https://stackoverflow.com/a/61565445/10235939
+# to run the workflow only when the pull request is merged
+
 on:
   pull_request:
-    branches: ["main"]
+    types:
+      - closed
 
 jobs:
   build:
     name: packer-image-build
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'}}
     runs-on: ubuntu-latest
 
     # Reading env variables from github secrets
