@@ -24,4 +24,6 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE vis_db TO vis_user;"
 
 # Update the pg_hba.conf file by replacing ident with md5
 sudo sed -i.bak 's/ident/md5/g' /var/lib/pgsql/data/pg_hba.conf
+
+# Restart the postgresql service
 sudo systemctl restart postgresql
