@@ -45,7 +45,6 @@ build {
   provisioner "shell" {
     scripts = [
       "./imageScripts/install_node.sh",
-      "./imageScripts/install_database.sh",
       "./imageScripts/create_group_user_csye6225.sh",
       "./imageScripts/webapp_bootup.sh",
     ]
