@@ -78,6 +78,7 @@ jobs:
       - name: Run packer validate command to check if configuration is valid or not
         run: packer validate ./packer
 
+      # Referenced from https://github.com/google-github-actions/setup-gcloud
       - name: Authentication with GCP
         uses: google-github-actions/auth@v2
         with:
