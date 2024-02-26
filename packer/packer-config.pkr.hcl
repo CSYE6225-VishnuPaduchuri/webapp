@@ -10,7 +10,7 @@ packer {
 }
 
 source "googlecompute" "webapp-centos-custom-image" {
-  project_id              = "${var.gcp_project_id}"
+  project_id   = "${var.gcp_project_id}"
   zone                    = "${var.gcp_zone}"
   ssh_username            = "${var.gcp_ssh_name}"
   disk_size               = "${var.image_disk_size}"
@@ -23,7 +23,7 @@ source "googlecompute" "webapp-centos-custom-image" {
   source_image_family     = "${var.source_image_family}"
   region                  = "${var.gcp_region}"
   machine_type            = "${var.gcp_machine_type}"
-  network                 = "${var.gcp_network}"
+  network                             = "${var.gcp_network}"
 }
 
 build {
