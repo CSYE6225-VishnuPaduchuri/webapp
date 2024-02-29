@@ -5,8 +5,7 @@ name: Build Image with Packer
 
 on:
   pull_request:
-    types:
-      - closed
+    branches: ["main"]
 
 jobs:
   build:
@@ -48,6 +47,15 @@ jobs:
       - run: npm install
       - run: npm test
       - run: rm -r node_modules
+
+      - name: create env file for webapp
+        run: |
+          touch .env
+          echo "SERVER_PORT=${SERVER_PORT}" >> .env
+          echo "DATABASE_NAME=${DATABASE_NAME}" >> .env
+          echo "DATABASE_USER_NAME=${DATABASE_USER_NAME}" >> .env
+          echo "DATABASE_PASSWORD=${DATABASE_PASSWORD}" >> .env
+          echo "DATABASE_HOST_URL=${DATABASE_HOST_URL}" >> .env
 
         # we have added webapp.zip as part of the file provisioner in packer
         # so we need to perform the zip operation and then copy the zip file to the current directory
