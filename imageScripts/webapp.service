@@ -1,6 +1,6 @@
 [Unit]
 Description=This is used to start the webapp when image is booted on a VM
-ConditionPathExists=/opt/csye6225/webapp/node_modules
+ConditionPathExists=/opt/csye6225/webapp/.env
 After=network.target
 
 [Service]
