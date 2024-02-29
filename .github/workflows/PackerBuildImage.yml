@@ -10,7 +10,6 @@ on:
 jobs:
   build:
     name: packer-image-build
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'}}
     runs-on: ubuntu-latest
 
     # Reading env variables from github secrets
