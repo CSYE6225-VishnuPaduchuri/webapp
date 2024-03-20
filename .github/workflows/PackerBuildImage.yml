@@ -5,13 +5,11 @@ name: Build Image with Packer
 
 on:
   pull_request:
-    types:
-      - closed
+    branches: ["main"]
 
 jobs:
   build:
     name: packer-image-build
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'}}
     runs-on: ubuntu-latest
 
     # Reading env variables from github secrets
@@ -23,6 +21,7 @@ jobs:
       DATABASE_HOST_URL: ${{ secrets.DATABASE_HOST_URL }}
       PACKER_GCP_CREDENTIALS: ${{ secrets.PACKER_GCP_CREDENTIALS }}
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      LOG_FILE_PATH: ${{ secrets.LOG_FILE_PATH }}
 
     steps:
       - uses: actions/checkout@v3
@@ -57,6 +56,7 @@ jobs:
           echo "DATABASE_USER_NAME=${DATABASE_USER_NAME}" >> .env
           echo "DATABASE_PASSWORD=${DATABASE_PASSWORD}" >> .env
           echo "DATABASE_HOST_URL=${DATABASE_HOST_URL}" >> .env
+          echo "LOG_FILE_PATH=${LOG_FILE_PATH}" >> .env
 
         # we have added webapp.zip as part of the file provisioner in packer
         # so we need to perform the zip operation and then copy the zip file to the current directory

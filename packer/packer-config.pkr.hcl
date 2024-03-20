@@ -50,6 +50,7 @@ build {
   provisioner "shell" {
     scripts = [
       "./imageScripts/install_node.sh",
+      "./imageScripts/google_ops_agent.sh",
       "./imageScripts/create_group_user_csye6225.sh",
       "./imageScripts/webapp_bootup.sh",
     ]
