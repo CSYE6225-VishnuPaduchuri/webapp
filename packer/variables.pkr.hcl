@@ -7,7 +7,7 @@ variable "gcp_project_id" {
 variable "gcp_zone" {
   description = "The GCP zone"
   type        = string
-  default     = "us-east1-b"
+  default     = "us-west4-b"
 }
 
 variable "gcp_ssh_name" {
@@ -55,7 +55,7 @@ variable "source_image_family" {
 variable "gcp_region" {
   description = "The region where the image will be created"
   type        = string
-  default     = "us-east1"
+  default     = "us-west4"
 }
 
 variable "gcp_network" {
