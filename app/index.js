@@ -3,11 +3,17 @@ import registerRoutes from "../routes/index.js";
 import { setHeadersAtGloablLevel } from "../middleware/globalHeaders.js";
 import sequelize from "../utils/database/sequelizeSetup.js";
 import winston from "winston";
+import dotenv from "dotenv";
+
+// Get ENV Variables
+dotenv.config();
 
 // Chose winston for logging based on the following reasons:
 // https://betterstack.com/community/guides/logging/best-nodejs-logging-libraries/
 // Most downloaded logging libarary for nodejs
 
+// we will store logs in default file webapp.log at current scope, if we pass LOG_FILE_LOCATION in env then it will store logs in that file
+const logFilePath = process.env.LOG_FILE_PATH || "webapp.log";
 // Reference from https://www.npmjs.com/package/winston#installation
 export const customLogger = winston.createLogger({
   format: winston.format.combine(
@@ -16,7 +22,10 @@ export const customLogger = winston.createLogger({
   ),
   defaultMeta: { service: "webapp-backend" },
   transports: [
-    new winston.transports.File({ filename: "webapp.log", level: "silly" }),
+    new winston.transports.File({
+      filename: logFilePath,
+      level: "silly",
+    }),
     new winston.transports.Console(),
   ],
 });
