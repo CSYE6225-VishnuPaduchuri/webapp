@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # We will create a file to store the logs in var directory
-sudo mkdir /var/log/webapp/
+sudo mkdir /var/log/webapp
 
 # Change the ownership of the directory to the user
 # Reference from https://askubuntu.com/a/6727
-sudo chown -R csye6225:csye6225 /var/log/webapp/
+sudo chown -R csye6225:csye6225 /var/log/webapp
 
-sudo chmod -R 775 /var/log/webapp/
+sudo chmod -R 775 /var/log/webapp
 
 # Before we start, we need to unzip the webapp and move it from /tmp/ to /opt/csye6225
 

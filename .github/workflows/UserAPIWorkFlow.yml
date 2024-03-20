@@ -29,6 +29,10 @@ jobs:
           sudo apt install postgresql postgresql-contrib -y
           sudo systemctl start postgresql.service
 
+      - name: Add webaapp log directory under /var/log
+        run: |
+          sudo mkdir /var/log/webapp
+
       # Referenced from to create DB, a new user and granting them necessary permissions
       # https://medium.com/@mohammedhammoud/postgresql-create-user-create-database-grant-privileges-access-aabb2507c0aa
       - name: create a new DB and update the user password via secrets
