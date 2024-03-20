@@ -16,6 +16,8 @@ userRouter
   .delete(Controller.CommonController.MethodNotSupported)
   .patch(Controller.CommonController.MethodNotSupported)
   .head(Controller.CommonController.MethodNotSupported)
+  .get(Controller.CommonController.MethodNotSupported)
+  .put(Controller.CommonController.MethodNotSupported)
   .options(Controller.CommonController.MethodNotSupported);
 
 userRouter
@@ -32,6 +34,7 @@ userRouter
   .delete(Controller.CommonController.MethodNotSupported)
   .patch(Controller.CommonController.MethodNotSupported)
   .head(Controller.CommonController.MethodNotSupported)
+  .post(Controller.CommonController.MethodNotSupported)
   .options(Controller.CommonController.MethodNotSupported);
 
 userRouter

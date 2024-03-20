@@ -3,14 +3,25 @@ import {
   createNewEntryForUser,
 } from "../../services/User/index.js";
 import bcrypt from "bcrypt";
+import { customLogger } from "../../app/index.js";
 
 export const createNewUser = async (req, res) => {
   try {
     const { first_name, last_name, username, password } = req.body;
 
+    customLogger.debug("Received request to create new user", {
+      payload: {
+        firstName: first_name,
+        lastName: last_name,
+        username: username,
+      },
+    });
+
     const isExistingUser = await findUserByUsername(username, res);
 
     if (isExistingUser) {
+      // we arre logging the username here so that we can track in google cloud
+      customLogger.warn("User already exists!", { username: username });
       // if user already exists then we have to return 409
       // 409 means conflict
       res.status(409).send();
@@ -35,14 +46,17 @@ export const createNewUser = async (req, res) => {
           account_created: newUser.account_created,
           account_updated: newUser.account_updated,
         };
+        customLogger.info("User created successfully!");
         res.status(201).send(responsebody);
       }
     }
   } catch (e) {
     if (e.name == "SequelizeConnectionRefusedError") {
+      customLogger.error("Unable to connect to the database!", { error: e });
       res.status(503).send();
       return;
     } else {
+      customLogger.error("Internal Server Error!", { error: e });
       res.status(500).send();
     }
   }
@@ -50,6 +64,13 @@ export const createNewUser = async (req, res) => {
 
 export const getUserDetails = (req, res) => {
   try {
+    // we are logging the username here so that we can track in google cloud
+    customLogger.debug("Received request to get user details", {
+      payload: {
+        username: req.authorizedUserObject.username,
+      },
+    });
+
     const userDetails = {
       id: req.authorizedUserObject.id,
       first_name: req.authorizedUserObject.first_name,
@@ -59,8 +80,12 @@ export const getUserDetails = (req, res) => {
       account_updated: req.authorizedUserObject.account_updated,
     };
 
+    customLogger.info("User details fetched successfully!");
     res.status(200).send(userDetails);
   } catch (e) {
+    customLogger.error("Internal Server Error when fetching User Details!", {
+      error: e,
+    });
     res.status(500).send();
   }
 };
@@ -78,6 +103,7 @@ export const updateUserDetails = async (req, res) => {
 
     if (body.hasOwnProperty("first_name")) {
       if (body["first_name"].length == 0) {
+        customLogger.error("User has sent empty first name for update!");
         res.status(400).send();
         return;
       }
@@ -86,6 +112,7 @@ export const updateUserDetails = async (req, res) => {
 
     if (body.hasOwnProperty("last_name")) {
       if (body["last_name"].length == 0) {
+        customLogger.error("User has sent empty last name for update!");
         res.status(400).send();
         return;
       }
@@ -98,13 +125,17 @@ export const updateUserDetails = async (req, res) => {
     }
 
     await authorizedUserObject.update(requestOject);
-
+    customLogger.info("User details updated successfully!");
     res.status(204).send();
   } catch (e) {
     if (e.name == "SequelizeConnectionRefusedError") {
+      customLogger.error("Unable to connect to the database!", { error: e });
       res.status(503).send();
       return;
     }
+    customLogger.error("Internal Server Error when updating User Details!", {
+      error: e,
+    });
     res.status(500).send();
   }
 };
