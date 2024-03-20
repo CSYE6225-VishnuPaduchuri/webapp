@@ -13,7 +13,7 @@ dotenv.config();
 // Most downloaded logging libarary for nodejs
 
 // we will store logs in default file webapp.log at current scope, if we pass LOG_FILE_LOCATION in env then it will store logs in that file
-const logFilePath = process.env.LOG_FILE_PATH || "webapp.log";
+const logFilePath = "/var/log/webapp/webapp.log";
 // Reference from https://www.npmjs.com/package/winston#installation
 export const customLogger = winston.createLogger({
   format: winston.format.combine(
