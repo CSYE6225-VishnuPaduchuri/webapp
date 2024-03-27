@@ -165,6 +165,18 @@ export const verifyLink = async (req, res) => {
       return;
     }
 
+    const getCurrentTimeStamp = new Date();
+
+    if (
+      getCurrentTimeStamp.getTime() -
+        userDetails.verificationMailTimeStamp.getTime() >
+      120000
+    ) {
+      customLogger.error("Verification link expired!", { email });
+      res.status(403).send();
+      return;
+    }
+
     await userDetails.update({ isUserVerified: true });
     customLogger.info("User Verified successfully!");
     res.status(204).send();
