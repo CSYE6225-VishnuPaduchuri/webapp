@@ -23,6 +23,8 @@ jobs:
       DATABASE_HOST_URL: ${{ secrets.DATABASE_HOST_URL }}
       PACKER_GCP_CREDENTIALS: ${{ secrets.PACKER_GCP_CREDENTIALS }}
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      IS_TEST_ENVIROMENT: ${{ secrets.IS_TEST_ENVIROMENT }}
+      TOPIC_NAME: ${{ secrets.TOPIC_NAME }}
 
     steps:
       - uses: actions/checkout@v3
@@ -61,6 +63,8 @@ jobs:
           echo "DATABASE_USER_NAME=${DATABASE_USER_NAME}" >> .env
           echo "DATABASE_PASSWORD=${DATABASE_PASSWORD}" >> .env
           echo "DATABASE_HOST_URL=${DATABASE_HOST_URL}" >> .env
+          echo "IS_TEST_ENVIROMENT=${IS_TEST_ENVIROMENT}" >> .env
+          echo "TOPIC_NAME=${TOPIC_NAME}" >> .env
 
         # we have added webapp.zip as part of the file provisioner in packer
         # so we need to perform the zip operation and then copy the zip file to the current directory
