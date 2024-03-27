@@ -4,6 +4,7 @@ import {
 } from "../../services/User/index.js";
 import bcrypt from "bcrypt";
 import { customLogger } from "../../app/index.js";
+import publishMessageToTopic from "../../utils/pubsub/index.js";
 
 export const createNewUser = async (req, res) => {
   try {
@@ -33,6 +34,7 @@ export const createNewUser = async (req, res) => {
         last_name: last_name,
         username: username,
         password: hashedPassword,
+        isUserVerified: false,
       };
 
       const newUser = await createNewEntryForUser(requestBody);
@@ -45,8 +47,12 @@ export const createNewUser = async (req, res) => {
           username: newUser.username,
           account_created: newUser.account_created,
           account_updated: newUser.account_updated,
+          isUserVerified: newUser.isUserVerified,
         };
         customLogger.info("User created successfully!");
+        if (!process.env.IS_TEST_ENVIROMENT) {
+          publishMessageToTopic(responsebody);
+        }
         res.status(201).send(responsebody);
       }
     }
@@ -78,6 +84,7 @@ export const getUserDetails = (req, res) => {
       username: req.authorizedUserObject.username,
       account_created: req.authorizedUserObject.account_created,
       account_updated: req.authorizedUserObject.account_updated,
+      isUserVerified: req.authorizedUserObject.isUserVerified,
     };
 
     customLogger.info("User details fetched successfully!");
