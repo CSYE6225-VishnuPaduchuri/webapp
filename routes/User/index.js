@@ -6,6 +6,7 @@ import {
   handleParamsAndBody,
   handleBaseAuth,
   handleParamsAndBodyForPut,
+  handleParamsAndBodyForVerification,
 } from "../../middleware/queryAndBodyCheck.js";
 import Controller from "../../controllers/index.js";
 
@@ -51,6 +52,21 @@ userRouter
     handleParamsAndBodyForPut,
     handleBaseAuth,
     Controller.UserController.updateUserDetails
+  );
+
+userRouter
+  .route("/verification")
+  .delete(Controller.CommonController.MethodNotSupported)
+  .patch(Controller.CommonController.MethodNotSupported)
+  .head(Controller.CommonController.MethodNotSupported)
+  .post(Controller.CommonController.MethodNotSupported)
+  .put(Controller.CommonController.MethodNotSupported);
+
+userRouter
+  .route("/verification")
+  .get(
+    handleParamsAndBodyForVerification,
+    Controller.UserController.verifyLink
   );
 
 export default userRouter;

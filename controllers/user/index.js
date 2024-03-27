@@ -146,3 +146,37 @@ export const updateUserDetails = async (req, res) => {
     res.status(500).send();
   }
 };
+
+export const verifyLink = async (req, res) => {
+  try {
+    const { query } = req;
+    const { email } = query;
+    const userDetails = await findUserByUsername(email, res);
+
+    if (userDetails == null) {
+      customLogger.error("User not found!", { email });
+      res.status(404).send();
+      return;
+    }
+
+    if (userDetails.isUserVerified) {
+      customLogger.warn("User already verified!", { email });
+      res.status(409).send();
+      return;
+    }
+
+    await userDetails.update({ isUserVerified: true });
+    customLogger.info("User Verified successfully!");
+    res.status(204).send();
+  } catch (e) {
+    if (e.name == "SequelizeConnectionRefusedError") {
+      customLogger.error("Unable to connect to the database!", { error: e });
+      res.status(503).send();
+      return;
+    }
+    customLogger.error("Internal Server Error when updating User Details!", {
+      error: e,
+    });
+    res.status(500).send();
+  }
+};
