@@ -14,6 +14,7 @@ jobs:
       DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
       DATABASE_USER_NAME: ${{ secrets.DATABASE_USER_NAME }}
       DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      IS_TEST_ENVIROMENT: ${{ secrets.IS_TEST_ENVIROMENT }}
 
     steps:
       - uses: actions/checkout@v3
@@ -32,6 +33,11 @@ jobs:
       - name: Add webaapp log directory under /var/log
         run: |
           sudo mkdir /var/log/webapp
+
+      - name: create env file for webapp
+        run: |
+          touch .env
+          echo "IS_TEST_ENVIROMENT=${IS_TEST_ENVIROMENT}" >> .env
 
       # Referenced from to create DB, a new user and granting them necessary permissions
       # https://medium.com/@mohammedhammoud/postgresql-create-user-create-database-grant-privileges-access-aabb2507c0aa
