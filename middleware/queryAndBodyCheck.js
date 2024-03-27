@@ -223,6 +223,16 @@ export const handleBaseAuth = async (req, res, next) => {
       checkUserCredentials.password
     );
 
+    if (!checkUserCredentials.isUserVerified) {
+      customLogger.error("User is not verified!", {
+        method: req.method,
+        path: req.originalUrl,
+      });
+      res.setHeader("WWW-Authenticate", "Basic");
+      res.status(401).send();
+      return;
+    }
+
     if (isPasswordValid) {
       // We will append the user data to authorizedUserObject
       // and return it from controller
