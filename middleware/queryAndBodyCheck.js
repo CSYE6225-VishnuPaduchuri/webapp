@@ -44,6 +44,33 @@ export const handleParamsAndBody = (req, res, next) => {
   }
 };
 
+export const handleParamsAndBodyForVerification = (req, res, next) => {
+  // Desctructure the request object
+  const { body, query } = req;
+
+  const bodyJson = Object.keys(body);
+
+  const { email = "", ...otherParams } = query;
+
+  if (email.length == 0 || Object.keys(otherParams).length > 0) {
+    customLogger.error("Bad Request, Email is mandatory for verification!", {
+      method: req.method,
+      path: req.originalUrl,
+    });
+    res.status(400).send();
+    return;
+  } else if (bodyJson.length > 0 || !!req.headers["content-type"]) {
+    customLogger.error("Bad Request, request body should be empty!", {
+      method: req.method,
+      path: req.originalUrl,
+    });
+    res.status(400).send();
+    return;
+  } else {
+    next();
+  }
+};
+
 export const handleRequestBodyForUserPostCall = (req, res, next) => {
   const { body, query, url } = req;
 
