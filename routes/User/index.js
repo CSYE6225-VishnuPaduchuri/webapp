@@ -54,19 +54,14 @@ userRouter
     Controller.UserController.updateUserDetails
   );
 
-userRouter
-  .route("/verification")
-  .delete(Controller.CommonController.MethodNotSupported)
-  .patch(Controller.CommonController.MethodNotSupported)
-  .head(Controller.CommonController.MethodNotSupported)
-  .post(Controller.CommonController.MethodNotSupported)
-  .put(Controller.CommonController.MethodNotSupported);
+// userRouter
+//   .route("/verifyUser:")
+//   .delete(Controller.CommonController.MethodNotSupported)
+//   .patch(Controller.CommonController.MethodNotSupported)
+//   .head(Controller.CommonController.MethodNotSupported)
+//   .post(Controller.CommonController.MethodNotSupported)
+//   .put(Controller.CommonController.MethodNotSupported);
 
-userRouter
-  .route("/verification")
-  .get(
-    handleParamsAndBodyForVerification,
-    Controller.UserController.verifyLink
-  );
+userRouter.route("/verifyUser/:id").get(Controller.UserController.verifyLink);
 
 export default userRouter;
