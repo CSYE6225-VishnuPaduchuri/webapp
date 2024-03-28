@@ -50,9 +50,16 @@ export const createNewUser = async (req, res) => {
           isUserVerified: newUser.isUserVerified,
         };
         customLogger.info("User created successfully!");
-        if (!process.env.IS_TEST_ENVIROMENT) {
-          publishMessageToTopic(responsebody);
-        }
+
+        const pubsubBody = {
+          username: newUser.username,
+          first_name: newUser.first_name,
+          last_name: newUser.last_name,
+          id: newUser.id,
+        };
+
+        await publishMessageToTopic(pubsubBody);
+
         res.status(201).send(responsebody);
       }
     }
