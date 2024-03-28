@@ -172,27 +172,30 @@ export const verifyLink = async (req, res) => {
       return;
     }
 
-    const getCurrentTimeStamp = new Date();
-
-    const verificationTimeStamp = new Date(
-      userDetails.verificationMailTimeStamp
-    );
-
     customLogger.debug("Verifying user!", {
       currentTimeStamp: getCurrentTimeStamp,
-      verificationTimeStamp,
       userDetails,
     });
 
-    customLogger.info("Verification link timestamp check in progress!");
-    if (
-      getCurrentTimeStamp.getTime() - verificationTimeStamp.getTime() >
-      120000
-    ) {
-      customLogger.error("Verification link expired!", { email });
-      res.status(403).send();
-      return;
-    }
+    const getCurrentTimeStamp = new Date().getTime();
+
+    const verificationTimeStamp = new Date(
+      userDetails.verificationMailTimeStamp
+    ).getTime();
+
+    customLogger.debug("Verification link timestamp check in progress!", {
+      getCurrentTimeStamp,
+      verificationTimeStamp,
+    });
+
+    // if (
+    //   getCurrentTimeStamp.getTime() - verificationTimeStamp.getTime() >
+    //   120000
+    // ) {
+    //   customLogger.error("Verification link expired!", { email });
+    //   res.status(403).send();
+    //   return;
+    // }
 
     await userDetails.update({ isUserVerified: true });
     customLogger.info("User Verified successfully!");
