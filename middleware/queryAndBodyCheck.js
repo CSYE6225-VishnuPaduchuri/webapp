@@ -251,7 +251,7 @@ export const handleBaseAuth = async (req, res, next) => {
     );
 
     if (
-      !process.env.IS_TEST_ENVIROMENT &&
+      process.env.IS_TEST_ENVIROMENT === "false" &&
       !checkUserCredentials.isUserVerified
     ) {
       customLogger.error("User is not verified!", {
