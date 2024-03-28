@@ -22,3 +22,16 @@ export const createNewEntryForUser = async (requestBody) => {
     return null;
   }
 };
+
+export const findUserByUserId = async (userId, res) => {
+  try {
+    const userDetails = await User.findOne({ where: { id: userId } });
+    return userDetails;
+  } catch (e) {
+    if (e.name == "SequelizeConnectionRefusedError") {
+      res.status(503).send();
+      return;
+    }
+    return null;
+  }
+};

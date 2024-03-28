@@ -1,6 +1,7 @@
 import {
   findUserByUsername,
   createNewEntryForUser,
+  findUserByUserId,
 } from "../../services/User/index.js";
 import bcrypt from "bcrypt";
 import { customLogger } from "../../app/index.js";
@@ -156,28 +157,31 @@ export const updateUserDetails = async (req, res) => {
 
 export const verifyLink = async (req, res) => {
   try {
-    const { query } = req;
-    const { email } = query;
-    const userDetails = await findUserByUsername(email, res);
+    const { params } = req;
+    const { id } = params;
+
+    const userDetails = await findUserByUserId(id, res);
 
     if (userDetails == null) {
-      customLogger.error("User not found!", { email });
+      customLogger.error("User not found!", { email: userDetails.username });
       res.status(404).send();
       return;
     }
 
     if (userDetails.isUserVerified) {
-      customLogger.warn("User already verified!", { email });
+      customLogger.warn("User already verified!", {
+        email: userDetails.username,
+      });
       res.status(409).send();
       return;
     }
+
+    const getCurrentTimeStamp = new Date().getTime();
 
     customLogger.debug("Verifying user!", {
       currentTimeStamp: getCurrentTimeStamp,
       userDetails,
     });
-
-    const getCurrentTimeStamp = new Date().getTime();
 
     const verificationTimeStamp = new Date(
       userDetails.verificationMailTimeStamp
@@ -188,14 +192,13 @@ export const verifyLink = async (req, res) => {
       verificationTimeStamp,
     });
 
-    // if (
-    //   getCurrentTimeStamp.getTime() - verificationTimeStamp.getTime() >
-    //   120000
-    // ) {
-    //   customLogger.error("Verification link expired!", { email });
-    //   res.status(403).send();
-    //   return;
-    // }
+    if (getCurrentTimeStamp - verificationTimeStamp > 120000) {
+      customLogger.error("Verification link expired!", {
+        email: userDetails.username,
+      });
+      res.status(403).send();
+      return;
+    }
 
     await userDetails.update({ isUserVerified: true });
     customLogger.info("User Verified successfully!");
