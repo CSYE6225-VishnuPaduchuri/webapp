@@ -178,6 +178,13 @@ export const verifyLink = async (req, res) => {
       userDetails.verificationMailTimeStamp
     );
 
+    customLogger.debug("Verifying user!", {
+      currentTimeStamp: getCurrentTimeStamp,
+      verificationTimeStamp,
+      userDetails,
+    });
+
+    customLogger.info("Verification link timestamp check in progress!");
     if (
       getCurrentTimeStamp.getTime() - verificationTimeStamp.getTime() >
       120000
