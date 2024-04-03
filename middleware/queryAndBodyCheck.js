@@ -259,7 +259,7 @@ export const handleBaseAuth = async (req, res, next) => {
         path: req.originalUrl,
       });
       res.setHeader("WWW-Authenticate", "Basic");
-      res.status(401).send();
+      res.status(403).send();
       return;
     }
 
