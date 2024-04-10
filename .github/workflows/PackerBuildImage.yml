@@ -100,21 +100,16 @@ jobs:
 
       - name: Build Image using Packer
         id: packer_build_image
-        run: |
-          packer_output=$(packer build -var "gcp_project_id=${{ env.GCP_PROJECT_ID }}" ./packer)
-          image_id=$(echo "$packer_output" | grep -oP '(?<=Image\sID:\s).*')
-          echo "::set-output name=image_id::$image_id"
+        run: packer build -var 'gcp_project_id=${{ env.GCP_PROJECT_ID }}' ./packer
 
       - name: New Instance Template
         run: |
-          image_id=${{ steps.packer_build_image.outputs.image_id }}
-          echo "Image ID: $image_id" 
           gcloud compute instance-templates create webapp-template-testing \
           --project=csye6225-vishnupaduchuri \
           --instance-template-region=us-west4 \
           --region=us-west4 \
           --machine-type=e2-medium \
-          --image=$image_id" \
+          --image=projects/csye6225-vishnupaduchuri/global/images/vishnu-csye6225-1712136213 \
           --description="Template via CD" \
           --network=https://www.googleapis.com/compute/beta/projects/csye6225-vishnupaduchuri/global/networks/vis-cloud-vpc
           --subnet=https://www.googleapis.com/compute/beta/projects/csye6225-vishnupaduchuri/regions/us-west4/subnetworks/webapp
