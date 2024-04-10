@@ -100,11 +100,16 @@ jobs:
 
       - name: Build Image using Packer
         id: packer_build_image
-        run: packer build -var 'gcp_project_id=${{ env.GCP_PROJECT_ID }}' ./packer
+        run: |
+          packer build -var 'gcp_project_id=${{ env.GCP_PROJECT_ID }}' ./packer  | tee > packer_output.txt
+          image_id=$(grep 'A disk image was created' packer-build-log.txt | awk '{print $12}')
+          echo "::set-output name=image_id::$image_id"
 
       - name: New Instance Template
         run: |
-          gcloud compute instance-templates create webapp-template-testing-2 \
+          echo "Image ID in Build: $image_id"
+          echo "Project ID: ${{ env.GCP_PROJECT_ID }}"
+          gcloud compute instance-templates create webapp-template-testing-3 \
           --project=csye6225-vishnupaduchuri \
           --instance-template-region=us-west4 \
           --region=us-west4 \
@@ -127,8 +132,8 @@ jobs:
             DATABASE_USER_NAME=webapp
             DATABASE_PASSWORD=E5bJh299mU1KU5ZT
             DATABASE_HOST_URL=10.27.0.2
-            IS_TEST_ENVIRONMENT=false
-            TOPIC_NAME="verify_email"
+            IS_TEST_ENVIROMENT=false
+            TOPIC_NAME=verify_email
 
             if [ -f \"\$ENV_FILE\" ]; then
                 echo \"Env file exists.\"
@@ -137,7 +142,7 @@ jobs:
                 sudo sed -i \"s/^DATABASE_USER_NAME=.*/DATABASE_USER_NAME=\$DATABASE_USER_NAME/\" \"\$ENV_FILE\"
                 sudo sed -i \"s/^DATABASE_PASSWORD=.*/DATABASE_PASSWORD=\$DATABASE_PASSWORD/\" \"\$ENV_FILE\"
                 sudo sed -i \"s/^DATABASE_HOST_URL=.*/DATABASE_HOST_URL=\$DATABASE_HOST_URL/\" \"\$ENV_FILE\"
-                sudo sed -i \"s/^IS_TEST_ENVIRONMENT=.*/IS_TEST_ENVIRONMENT=\$IS_TEST_ENVIRONMENT/\" \"\$ENV_FILE\"
+                sudo sed -i \"s/^IS_TEST_ENVIROMENT=.*/IS_TEST_ENVIROMENT=\$IS_TEST_ENVIROMENT/\" \"\$ENV_FILE\"
                 sudo sed -i \"s/^TOPIC_NAME=.*/TOPIC_NAME=\$TOPIC_NAME/\" \"\$ENV_FILE\"
             else
                 echo \"File does not exist.\"
@@ -146,7 +151,7 @@ jobs:
                 sudo sh -c \"echo 'DATABASE_USER_NAME=\$DATABASE_USER_NAME' >> \$ENV_FILE\"
                 sudo sh -c \"echo 'DATABASE_PASSWORD=\$DATABASE_PASSWORD' >> \$ENV_FILE\"
                 sudo sh -c \"echo 'DATABASE_HOST_URL=\$DATABASE_HOST_URL' >> \$ENV_FILE\"
-                sudo sh -c \"echo 'IS_TEST_ENVIRONMENT=\$IS_TEST_ENVIRONMENT' >> \$ENV_FILE\"
+                sudo sh -c \"echo 'IS_TEST_ENVIROMENT=\$IS_TEST_ENVIROMENT' >> \$ENV_FILE\"
                 sudo sh -c \"echo 'TOPIC_NAME=\$TOPIC_NAME' >> \$ENV_FILE\"
             fi
 
@@ -162,9 +167,7 @@ jobs:
       - name: Start Rolling Update
         run: |
           gcloud compute instance-groups managed rolling-action start-update webapp-instance-group \
-          --version=template=https://compute.googleapis.com/compute/v1/projects/csye6225-vishnupaduchuri/regions/us-west4/instanceTemplates/webapp-template-testing-2 \
-          --max-surge=3 \
-          --max-unavailable=3 \
+          --version=template=https://compute.googleapis.com/compute/v1/projects/csye6225-vishnupaduchuri/regions/us-west4/instanceTemplates/webapp-template-testing-3 \
           --region=us-west4
 
       - name: Monitoring Updates
