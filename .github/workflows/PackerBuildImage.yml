@@ -34,6 +34,8 @@ jobs:
       PRODUCTION_DATABASE_PASSWORD: ${{ secrets.PRODUCTION_DATABASE_PASSWORD }}
       PRODUCTION_DATABASE_HOST_URL: ${{ secrets.PRODUCTION_DATABASE_HOST_URL }}
       SERVICE_ACCOUNT_SCOPES: ${{ secrets.SERVICE_ACCOUNT_SCOPES }}
+      PRODUCTION_MACHINE_TYPE: ${{ secrets.PRODUCTION_MACHINE_TYPE }}
+      PRODUCTION_MACHINE_DISK_SIZE: ${{ secrets.PRODUCTION_MACHINE_DISK_SIZE }}
 
     steps:
       - uses: actions/checkout@v3
@@ -123,13 +125,13 @@ jobs:
           --project=${{ env.GCP_PROJECT_ID }} \
           --instance-template-region=${{ env.PROJECT_REGION }} \
           --region=${{ env.PROJECT_REGION }} \
-          --machine-type=e2-medium \
+          --machine-type=${{ env.PRODUCTION_MACHINE_TYPE }} \
           --image=projects/${{ env.GCP_PROJECT_ID }}/global/images/${{ steps.packer_build_image.outputs.image_id }} \
           --description="Template via CD" \
           --network=${{ env.INSTANCE_NETWORK_VPC }} \
           --subnet=${{ env.INSTANCE_NETWORK_SUBNET }} \
           --boot-disk-type=pd-balanced  \
-          --boot-disk-size=100GB  \
+          --boot-disk-size=${{ env.PRODUCTION_MACHINE_DISK_SIZE }}  \
           --boot-disk-auto-delete \
           --tags=webapp-vm-firewall-tag \
           --boot-disk-kms-key=${{ env.DISK_KMS_KEY }} \
