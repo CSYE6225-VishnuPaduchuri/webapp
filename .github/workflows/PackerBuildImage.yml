@@ -29,6 +29,11 @@ jobs:
       INSTANCE_NETWORK_SUBNET: ${{ secrets.INSTANCE_NETWORK_SUBNET }}
       DISK_KMS_KEY: ${{ secrets.DISK_KMS_KEY }}
       SERVICE_ACCOUNT_EMAIL: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+      PRODUCTION_DATABASE_NAME: ${{ secrets.PRODUCTION_DATABASE_NAME }}
+      PRODUCTION_DATABASE_USER_NAME: ${{ secrets.PRODUCTION_DATABASE_USER_NAME }}
+      PRODUCTION_DATABASE_PASSWORD: ${{ secrets.PRODUCTION_DATABASE_PASSWORD }}
+      PRODUCTION_DATABASE_HOST_URL: ${{ secrets.PRODUCTION_DATABASE_HOST_URL }}
+      SERVICE_ACCOUNT_SCOPES: ${{ secrets.SERVICE_ACCOUNT_SCOPES }}
 
     steps:
       - uses: actions/checkout@v3
@@ -133,10 +138,10 @@ jobs:
 
             ENV_FILE="/opt/csye6225/webapp/.env"
             SERVER_PORT=8080
-            DATABASE_NAME=webapp
-            DATABASE_USER_NAME=webapp
-            DATABASE_PASSWORD=E5bJh299mU1KU5ZT
-            DATABASE_HOST_URL=10.27.0.2
+            DATABASE_NAME=${{ env.PRODUCTION_DATABASE_NAME }}
+            DATABASE_USER_NAME=${{ env.PRODUCTION_DATABASE_USER_NAME }}
+            DATABASE_PASSWORD=${{ env.PRODUCTION_DATABASE_PASSWORD }}
+            DATABASE_HOST_URL=${{ env.PRODUCTION_DATABASE_HOST_URL}}
             IS_TEST_ENVIROMENT=false
             TOPIC_NAME=verify_email
 
@@ -167,7 +172,7 @@ jobs:
             echo \"Test=NewTemplate\" >> /tmp/.testEnv
             " \
           --service-account=${{ env.SERVICE_ACCOUNT_EMAIL }} \
-          --scopes=https://www.googleapis.com/auth/compute.readonly,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/userinfo.email
+          --scopes=${{ env.SERVICE_ACCOUNT_SCOPES }}
 
       - name: Start Rolling Update
         run: |
