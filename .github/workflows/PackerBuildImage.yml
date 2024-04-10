@@ -101,8 +101,8 @@ jobs:
       - name: Build Image using Packer
         id: packer_build_image
         run: |
-          packer build -var 'gcp_project_id=${{ env.GCP_PROJECT_ID }}' ./packer  | tee > packer_output.txt
-          image_id=$(grep 'A disk image was created' packer-build-log.txt | awk '{print $12}')
+          packer build -var 'gcp_project_id=${{ env.GCP_PROJECT_ID }}' ./packer  | tee packer_output.txt
+          image_id=$(grep 'A disk image was created' packer_output.txt | awk '{print $12}')
           echo "::set-output name=image_id::$image_id"
 
       - name: New Instance Template
