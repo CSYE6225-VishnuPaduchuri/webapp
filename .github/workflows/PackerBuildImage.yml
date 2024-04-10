@@ -101,7 +101,7 @@ jobs:
       - name: Build Image using Packer
         id: packer_build_image
         run: |
-          packer_output=$(packer build -var "gcp_project_id=${{ env.GCP_PROJECT_ID }}" ./packer | tee /dev/tty)
+          packer_output=$(packer build -var "gcp_project_id=${{ env.GCP_PROJECT_ID }}" ./packer)
           image_id=$(echo "$packer_output" | grep -oP '(?<=Image\sID:\s).*')
           echo "::set-output name=image_id::$image_id"
 
