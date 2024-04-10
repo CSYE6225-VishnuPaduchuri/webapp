@@ -179,7 +179,7 @@ jobs:
       - name: Start Rolling Update
         run: |
           gcloud compute instance-groups managed rolling-action start-update webapp-instance-group \
-          --version=template=https://compute.googleapis.com/compute/v1/projects/${{ env.GCP_PROJECT_ID }}/regions/${{ env.PROJECT_REGION }}/instanceTemplates/${{ env.NEW_INSTANCE_TEMPLATE_NAME }} \
+          --version=template=https://compute.googleapis.com/compute/v1/projects/csye6225-vishnupaduchuri/regions/${{ env.PROJECT_REGION }}/instanceTemplates/${{ env.NEW_INSTANCE_TEMPLATE_NAME }} \
           --region=${{ env.PROJECT_REGION }}
 
       - name: Monitoring Updates
