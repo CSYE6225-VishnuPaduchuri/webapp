@@ -5,13 +5,11 @@ name: Build Image with Packer
 
 on:
   pull_request:
-    types:
-      - closed
+    branches: ["main"]
 
 jobs:
   build:
     name: packer-image-build
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'}}
     runs-on: ubuntu-latest
 
     # Reading env variables from github secrets
@@ -101,4 +99,81 @@ jobs:
         run: gcloud info
 
       - name: Build Image using Packer
-        run: packer build -var 'gcp_project_id=${{ env.GCP_PROJECT_ID }}' ./packer
+        id: packer_build_image
+        run: |
+          packer_output=$(packer build -var "gcp_project_id=${{ env.GCP_PROJECT_ID }}" ./packer | tee /dev/tty)
+          image_id=$(echo "$packer_output" | grep -oP '(?<=Image\sID:\s).*')
+          echo "::set-output name=image_id::$image_id"
+
+      - name: New Instance Template
+        run: |
+          image_id=${{ steps.packer_build_image.outputs.image_id }}
+          echo "Image ID: $image_id" 
+          gcloud compute instance-templates create webapp-template-testing \
+          --project=csye6225-vishnupaduchuri \
+          --instance-template-region=us-west4 \
+          --region=us-west4 \
+          --machine-type=e2-medium \
+          --image=$image_id" \
+          --description="Template via CD" \
+          --network=https://www.googleapis.com/compute/beta/projects/csye6225-vishnupaduchuri/global/networks/vis-cloud-vpc
+          --subnet=https://www.googleapis.com/compute/beta/projects/csye6225-vishnupaduchuri/regions/us-west4/subnetworks/webapp
+          --boot-disk-type=pd-balanced  \
+          --boot-disk-size=100GB  \
+          --boot-disk-auto-delete \
+          --tags=webapp-vm-firewall-tag \
+          --boot-disk-kms-key=projects/csye6225-vishnupaduchuri/locations/us-west4/keyRings/application-kms-key-ring-WZOlsL7jBUDp/cryptoKeys/webapp-crypto-key \
+          --metadata=startup-script="#!/bin/bash
+            set -e
+
+            ENV_FILE=\"/opt/csye6225/webapp/.env\"
+            SERVER_PORT=8080
+            DATABASE_NAME=webapp
+            DATABASE_USER_NAME=webapp
+            DATABASE_PASSWORD=E5bJh299mU1KU5ZT
+            DATABASE_HOST_URL=10.27.0.2
+            IS_TEST_ENVIRONMENT=false
+            TOPIC_NAME=\"verify_email\"
+
+            if [ -f \"\$ENV_FILE\" ]; then
+                echo \"Env file exists.\"
+                sudo sed -i \"s/^SERVER_PORT=.*/SERVER_PORT=\$SERVER_PORT/\" \"\$ENV_FILE\"
+                sudo sed -i \"s/^DATABASE_NAME=.*/DATABASE_NAME=\$DATABASE_NAME/\" \"\$ENV_FILE\"
+                sudo sed -i \"s/^DATABASE_USER_NAME=.*/DATABASE_USER_NAME=\$DATABASE_USER_NAME/\" \"\$ENV_FILE\"
+                sudo sed -i \"s/^DATABASE_PASSWORD=.*/DATABASE_PASSWORD=\$DATABASE_PASSWORD/\" \"\$ENV_FILE\"
+                sudo sed -i \"s/^DATABASE_HOST_URL=.*/DATABASE_HOST_URL=\$DATABASE_HOST_URL/\" \"\$ENV_FILE\"
+                sudo sed -i \"s/^IS_TEST_ENVIRONMENT=.*/IS_TEST_ENVIRONMENT=\$IS_TEST_ENVIRONMENT/\" \"\$ENV_FILE\"
+                sudo sed -i \"s/^TOPIC_NAME=.*/TOPIC_NAME=\$TOPIC_NAME/\" \"\$ENV_FILE\"
+            else
+                echo \"File does not exist.\"
+                sudo sh -c \"echo 'SERVER_PORT=\$SERVER_PORT' > \$ENV_FILE\"
+                sudo sh -c \"echo 'DATABASE_NAME=\$DATABASE_NAME' >> \$ENV_FILE\"
+                sudo sh -c \"echo 'DATABASE_USER_NAME=\$DATABASE_USER_NAME' >> \$ENV_FILE\"
+                sudo sh -c \"echo 'DATABASE_PASSWORD=\$DATABASE_PASSWORD' >> \$ENV_FILE\"
+                sudo sh -c \"echo 'DATABASE_HOST_URL=\$DATABASE_HOST_URL' >> \$ENV_FILE\"
+                sudo sh -c \"echo 'IS_TEST_ENVIRONMENT=\$IS_TEST_ENVIRONMENT' >> \$ENV_FILE\"
+                sudo sh -c \"echo 'TOPIC_NAME=\$TOPIC_NAME' >> \$ENV_FILE\"
+            fi
+
+            sudo systemctl daemon-reload
+            sudo systemctl restart webapp
+            sudo systemctl daemon-reload
+
+            echo \"Test=NewTemplate\" >> /tmp/.testEnv
+            " \
+          --service-account=service-account-for-logs@csye6225-vishnupaduchuri.iam.gserviceaccount.com \
+          --scopes=https://www.googleapis.com/auth/compute.readonly,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/userinfo.email
+
+      - name: Start Rolling Update
+        run: |
+          gcloud compute instance-groups managed rolling-action start-update webapp-instance-group \
+          --version=template=https://compute.googleapis.com/compute/v1/projects/csye6225-vishnupaduchuri/regions/us-west4/instanceTemplates/instance-template-for-webapp \
+          --max-surge=3 \
+          --max-unavailable=3 \
+          --region=us-west4
+
+      - name: Monitoring Updates
+        run: |
+          gcloud compute instance-groups managed wait-until webapp-instance-group \
+          --version-target-reached \
+          --region=us-west4
