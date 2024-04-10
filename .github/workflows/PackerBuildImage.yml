@@ -104,7 +104,7 @@ jobs:
 
       - name: New Instance Template
         run: |
-          gcloud compute instance-templates create webapp-template-testing-1 \
+          gcloud compute instance-templates create webapp-template-testing-2 \
           --project=csye6225-vishnupaduchuri \
           --instance-template-region=us-west4 \
           --region=us-west4 \
@@ -162,7 +162,7 @@ jobs:
       - name: Start Rolling Update
         run: |
           gcloud compute instance-groups managed rolling-action start-update webapp-instance-group \
-          --version=template=https://compute.googleapis.com/compute/v1/projects/csye6225-vishnupaduchuri/regions/us-west4/instanceTemplates/instance-template-for-webapp \
+          --version=template=https://compute.googleapis.com/compute/v1/projects/csye6225-vishnupaduchuri/regions/us-west4/instanceTemplates/webapp-template-testing-2 \
           --max-surge=3 \
           --max-unavailable=3 \
           --region=us-west4
