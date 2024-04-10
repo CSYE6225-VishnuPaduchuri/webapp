@@ -104,12 +104,12 @@ jobs:
 
       - name: New Instance Template
         run: |
-          gcloud compute instance-templates create webapp-template-testing \
+          gcloud compute instance-templates create webapp-template-testing-1 \
           --project=csye6225-vishnupaduchuri \
           --instance-template-region=us-west4 \
           --region=us-west4 \
           --machine-type=e2-medium \
-          --image=projects/csye6225-vishnupaduchuri/global/images/vishnu-csye6225-1712136213 \
+          --image=projects/csye6225-vishnupaduchuri/global/images/vishnu-csye6225-1712742968 \
           --description="Template via CD" \
           --network=https://www.googleapis.com/compute/beta/projects/csye6225-vishnupaduchuri/global/networks/vis-cloud-vpc \
           --subnet=https://www.googleapis.com/compute/beta/projects/csye6225-vishnupaduchuri/regions/us-west4/subnetworks/webapp \
@@ -121,14 +121,14 @@ jobs:
           --metadata=startup-script="#!/bin/bash
             set -e
 
-            ENV_FILE=\"/opt/csye6225/webapp/.env\"
+            ENV_FILE="/opt/csye6225/webapp/.env"
             SERVER_PORT=8080
             DATABASE_NAME=webapp
             DATABASE_USER_NAME=webapp
             DATABASE_PASSWORD=E5bJh299mU1KU5ZT
             DATABASE_HOST_URL=10.27.0.2
             IS_TEST_ENVIRONMENT=false
-            TOPIC_NAME=\"verify_email\"
+            TOPIC_NAME="verify_email"
 
             if [ -f \"\$ENV_FILE\" ]; then
                 echo \"Env file exists.\"
