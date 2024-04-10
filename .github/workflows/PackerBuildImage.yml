@@ -111,8 +111,8 @@ jobs:
           --machine-type=e2-medium \
           --image=projects/csye6225-vishnupaduchuri/global/images/vishnu-csye6225-1712136213 \
           --description="Template via CD" \
-          --network=https://www.googleapis.com/compute/beta/projects/csye6225-vishnupaduchuri/global/networks/vis-cloud-vpc
-          --subnet=https://www.googleapis.com/compute/beta/projects/csye6225-vishnupaduchuri/regions/us-west4/subnetworks/webapp
+          --network=https://www.googleapis.com/compute/beta/projects/csye6225-vishnupaduchuri/global/networks/vis-cloud-vpc \
+          --subnet=https://www.googleapis.com/compute/beta/projects/csye6225-vishnupaduchuri/regions/us-west4/subnetworks/webapp \
           --boot-disk-type=pd-balanced  \
           --boot-disk-size=100GB  \
           --boot-disk-auto-delete \
