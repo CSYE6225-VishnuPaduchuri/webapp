@@ -35,14 +35,14 @@ after((done) => {
 describe("Create a new user and call get to verify if user has been created", () => {
   it("a user has to be created and their record has to be present in the Database", async () => {
     const createdUserResponse = await request(localServer)
-      .post("/v1/user")
+      .post("/v2/user")
       .send(userPayload);
 
     // we are checking if the request was successful by checking if the status code is 201
     assert.strictEqual(createdUserResponse.status, 201);
 
     const getUserDetailsRes = await request(localServer)
-      .get("/v1/user/self")
+      .get("/v2/user/self")
       .set(
         "Authorization",
         EncodeUserCredentials(userPayload.username, userPayload.password)
@@ -60,7 +60,7 @@ describe("Create a new user and call get to verify if user has been created", ()
   it("a user has to be created and their record has to be present in the Database", async () => {
     // Here we are updating the first_name of the user using the PUT method
     const updatedUserResponse = await request(localServer)
-      .put("/v1/user/self")
+      .put("/v2/user/self")
       .set(
         "Authorization",
         EncodeUserCredentials(userPayload.username, userPayload.password)
@@ -71,7 +71,7 @@ describe("Create a new user and call get to verify if user has been created", ()
     assert.strictEqual(updatedUserResponse.status, 204);
 
     const getUserDetailsRes = await request(localServer)
-      .get("/v1/user/self")
+      .get("/v2/user/self")
       .set(
         "Authorization",
         EncodeUserCredentials(userPayload.username, userPayload.password)
