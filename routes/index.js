@@ -8,7 +8,7 @@ export default (app) => {
   // For all API calls to /healthz, databaseRouter will be used to handle the request
   app.use("/healthz", databaseRouter);
 
-  // For all API calls to /v1/user, userRouter will be handling the request
+  // For all API calls to /v2/user, userRouter will be handling the request
   app.use("/v2/user", userRouter);
 
   // If someone hits a path that doesn't exist then we are sending 404 status
